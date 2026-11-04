@@ -1,0 +1,920 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CampusVoice | Management Intelligence</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        body {
+            background: #f4f6fb;
+            color: #1e293b;
+        }
+
+        .layout {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 245px;
+            background: #172554;
+            color: white;
+            padding: 30px 20px;
+            flex-shrink: 0;
+        }
+
+        .logo {
+            font-size: 25px;
+            font-weight: 800;
+            margin-bottom: 8px;
+        }
+
+        .logo span {
+            color: #38bdf8;
+        }
+
+        .tagline {
+            font-size: 12px;
+            color: #cbd5e1;
+            margin-bottom: 45px;
+        }
+
+        .nav-title {
+            font-size: 11px;
+            color: #94a3b8;
+            margin: 25px 0 12px;
+            letter-spacing: 1px;
+        }
+
+        .nav-item {
+            display: block;
+            padding: 13px;
+            border-radius: 9px;
+            margin-bottom: 8px;
+            color: #dbeafe;
+            font-size: 14px;
+            text-decoration: none;
+            transition: 0.2s;
+        }
+
+        .nav-item:hover {
+            background: #1e3a8a;
+        }
+
+        .nav-item.active {
+            background: #2563eb;
+            color: white;
+        }
+
+        .main {
+            flex: 1;
+            padding: 30px;
+            min-width: 0;
+        }
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            gap: 15px;
+        }
+
+        .topbar h1 {
+            font-size: 27px;
+        }
+
+        .topbar p {
+            color: #64748b;
+            font-size: 14px;
+            margin-top: 6px;
+        }
+
+        .status {
+            background: #dcfce7;
+            color: #15803d;
+            padding: 9px 15px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .welcome {
+            background: linear-gradient(120deg, #1d4ed8, #0f766e);
+            color: white;
+            border-radius: 17px;
+            padding: 27px;
+            margin-bottom: 25px;
+        }
+
+        .welcome h2 {
+            font-size: 23px;
+            margin-bottom: 9px;
+        }
+
+        .welcome p {
+            color: #dbeafe;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 18px;
+            margin-bottom: 25px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 23px;
+            border-radius: 13px;
+            box-shadow: 0 3px 12px #00000008;
+        }
+
+        .stat-card p {
+            color: #64748b;
+            font-size: 13px;
+        }
+
+        .stat-card h2 {
+            font-size: 29px;
+            margin-top: 12px;
+        }
+
+        .section-title {
+            font-size: 19px;
+            margin-bottom: 16px;
+        }
+
+        .panel {
+            background: white;
+            padding: 25px;
+            border-radius: 14px;
+            margin-bottom: 23px;
+            box-shadow: 0 3px 12px #00000008;
+        }
+
+        .panel h3 {
+            margin-bottom: 8px;
+        }
+
+        .forms {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            margin: 15px 0 8px;
+        }
+
+        textarea, select, input[type="file"] {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #dbe2ea;
+            border-radius: 8px;
+            background: #fff;
+            font-size: 14px;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 125px;
+        }
+
+        button, .download {
+            display: inline-block;
+            border: none;
+            background: #2563eb;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 17px;
+            text-decoration: none;
+            font-size: 13px;
+        }
+
+        button:hover, .download:hover {
+            background: #1d4ed8;
+        }
+
+        .secondary {
+            background: #0f766e;
+        }
+
+        .secondary:hover {
+            background: #115e59;
+        }
+
+        .hint {
+            font-size: 12px;
+            color: #64748b;
+            margin-top: 9px;
+            line-height: 1.6;
+        }
+
+        .charts {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .chart-box {
+            height: 280px;
+            position: relative;
+        }
+
+        .issue-list {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+
+        .issue-item {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            padding: 15px;
+            border-radius: 9px;
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            font-size: 13px;
+        }
+
+        .count {
+            background: #dbeafe;
+            color: #1d4ed8;
+            padding: 4px 9px;
+            border-radius: 20px;
+            font-weight: 700;
+        }
+
+        .table-wrap {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+            min-width: 850px;
+        }
+
+        th, td {
+            text-align: left;
+            padding: 14px;
+            border-bottom: 1px solid #e2e8f0;
+            vertical-align: top;
+        }
+
+        th {
+            background: #f8fafc;
+            color: #475569;
+        }
+
+        td.feedback-cell {
+            min-width: 260px;
+            max-width: 400px;
+            white-space: normal;
+            line-height: 1.5;
+        }
+
+        .positive {
+            color: #15803d;
+            font-weight: 700;
+        }
+
+        .negative {
+            color: #dc2626;
+            font-weight: 700;
+        }
+
+        .neutral {
+            color: #d97706;
+            font-weight: 700;
+        }
+
+        .error {
+            background: #fee2e2;
+            color: #b91c1c;
+            padding: 15px;
+            border-radius: 9px;
+            margin-bottom: 20px;
+        }
+
+        .success {
+            background: #dcfce7;
+            color: #166534;
+            padding: 15px;
+            border-radius: 9px;
+            margin-bottom: 20px;
+        }
+
+        .empty {
+            color: #94a3b8;
+            text-align: center;
+            padding: 25px;
+            font-size: 13px;
+        }
+
+        .record-heading {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 18px;
+        }
+
+        .record-count {
+            background: #eff6ff;
+            color: #1d4ed8;
+            padding: 8px 13px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .filter-form {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr) auto;
+            gap: 12px;
+            align-items: end;
+            margin-bottom: 20px;
+        }
+
+        .filter-form label {
+            margin-top: 0;
+        }
+
+        .filter-form button {
+            margin-top: 0;
+        }
+
+        .filter-form select {
+            margin-top: 8px;
+        }
+
+        footer {
+            text-align: center;
+            padding: 25px;
+            color: #94a3b8;
+            font-size: 12px;
+        }
+
+        @media(max-width: 950px) {
+            .stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .forms, .charts {
+                grid-template-columns: 1fr;
+            }
+
+            .filter-form {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        @media(max-width: 650px) {
+            .sidebar {
+                width: 190px;
+                padding: 20px 12px;
+            }
+
+            .main {
+                padding: 16px;
+            }
+
+            .stats {
+                grid-template-columns: 1fr 1fr;
+                gap: 10px;
+            }
+
+            .stat-card {
+                padding: 15px;
+            }
+
+            .stat-card h2 {
+                font-size: 23px;
+            }
+
+            .topbar h1 {
+                font-size: 21px;
+            }
+
+            .issue-list {
+                grid-template-columns: 1fr;
+            }
+
+            .filter-form {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+{% set current_page = page|default('dashboard') %}
+<div class="layout">
+
+    <aside class="sidebar">
+        <div class="logo">Campus<span>Voice</span></div>
+        <div class="tagline">Student Feedback Intelligence</div>
+
+        <div class="nav-title">MAIN MENU</div>
+
+        <a href="/" class="nav-item {% if current_page == 'dashboard' %}active{% endif %}">
+            Dashboard
+        </a>
+
+        <a href="/individual" class="nav-item {% if current_page == 'individual' %}active{% endif %}">
+            Individual Feedback
+        </a>
+
+        <a href="/bulk" class="nav-item {% if current_page == 'bulk' %}active{% endif %}">
+            Bulk CSV Upload
+        </a>
+
+        <a href="/records" class="nav-item {% if current_page == 'records' %}active{% endif %}">
+            Feedback Records
+        </a>
+
+        <a href="/analysis" class="nav-item {% if current_page == 'analysis' %}active{% endif %}">
+            Category Analysis
+        </a>
+
+        <div class="nav-title">DATA</div>
+
+        <a href="/download" class="nav-item">
+            Download Reports
+        </a>
+    </aside>
+
+    <main class="main">
+
+        <div class="topbar">
+            <div>
+                <h1>
+                    {% if current_page == 'dashboard' %}
+                        Management Dashboard
+                    {% elif current_page == 'individual' %}
+                        Individual Feedback
+                    {% elif current_page == 'bulk' %}
+                        Bulk Feedback Upload
+                    {% elif current_page == 'records' %}
+                        Feedback Records
+                    {% elif current_page == 'analysis' %}
+                        Category Analysis
+                    {% endif %}
+                </h1>
+
+                <p>CampusVoice | Institutional Feedback Intelligence System</p>
+            </div>
+
+            <div class="status">SYSTEM ACTIVE</div>
+        </div>
+
+        {% if error %}
+            <div class="error">{{ error }}</div>
+        {% endif %}
+
+        {% if success %}
+            <div class="success">{{ success }}</div>
+        {% endif %}
+
+        {% if request.args.get('saved') == '1' %}
+            <div class="success">
+                Individual feedback submitted and saved successfully.
+            </div>
+        {% endif %}
+
+        {% if request.args.get('saved') %}
+            {% if request.args.get('saved') != '1' %}
+                <div class="success">
+                    {{ request.args.get('saved') }} feedback records uploaded and saved successfully.
+                </div>
+            {% endif %}
+        {% endif %}
+
+        {% if current_page == 'dashboard' %}
+
+            <div class="welcome">
+                <h2>Welcome to CampusVoice</h2>
+                <p>
+                    A centralized platform to collect, analyze and understand
+                    student feedback using Natural Language Processing.
+                    Monitor institutional concerns and identify areas that
+                    require management attention.
+                </p>
+            </div>
+
+            <div class="stats">
+                <div class="stat-card">
+                    <p>Total Feedback</p>
+                    <h2>{{ total_feedback }}</h2>
+                </div>
+
+                <div class="stat-card">
+                    <p>Positive Feedback</p>
+                    <h2 class="positive">
+                        {{ sentiment_counts.get('Positive', 0) }}
+                    </h2>
+                </div>
+
+                <div class="stat-card">
+                    <p>Negative Feedback</p>
+                    <h2 class="negative">
+                        {{ sentiment_counts.get('Negative', 0) }}
+                    </h2>
+                </div>
+
+                <div class="stat-card">
+                    <p>Neutral Feedback</p>
+                    <h2 class="neutral">
+                        {{ sentiment_counts.get('Neutral', 0) }}
+                    </h2>
+                </div>
+            </div>
+
+            <div class="charts">
+                <div class="panel">
+                    <h3>Sentiment Distribution</h3>
+                    <p class="hint">Overall student feedback sentiment</p>
+                    <div class="chart-box">
+                        <canvas id="sentimentChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="panel">
+                    <h3>Feedback Categories</h3>
+                    <p class="hint">Distribution of identified feedback topics</p>
+                    <div class="chart-box">
+                        <canvas id="categoryChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel">
+                <div class="record-heading">
+                    <h3>Recent Feedback Records</h3>
+                    <a href="/records" class="download">View All Records</a>
+                </div>
+
+                {% if results %}
+                    <div class="table-wrap">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Feedback</th>
+                                    <th>Sentiment</th>
+                                    <th>Category</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                {% for row in results[-5:]|reverse %}
+                                    <tr>
+                                        <td>{{ row.get('timestamp', '') }}</td>
+
+                                        <td class="feedback-cell">
+                                            {{ row.get('feedback', '') }}
+                                        </td>
+
+                                        <td class="{{ row.get('sentiment', '')|lower }}">
+                                            {{ row.get('sentiment', '') }}
+                                        </td>
+
+                                        <td>{{ row.get('category', '') }}</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="empty">
+                        No feedback records available yet.
+                    </div>
+                {% endif %}
+            </div>
+
+        {% endif %}
+        {% if current_page == 'individual' %}
+
+            <div class="panel">
+                <h3>Submit Individual Feedback</h3>
+
+                <p class="hint">
+                    Enter feedback received from an individual student.
+                    CampusVoice will analyze and store the feedback.
+                </p>
+
+                <form action="/individual" method="POST">
+
+                    <label for="feedback">Student Feedback</label>
+
+                    <textarea
+                        id="feedback"
+                        name="feedback"
+                        placeholder="Enter the student's feedback here..."
+                        required
+                    ></textarea>
+
+                    <button type="submit">
+                        Analyze and Save Feedback
+                    </button>
+
+                </form>
+            </div>
+
+        {% endif %}
+
+
+        {% if current_page == 'bulk' %}
+
+            <div class="panel">
+                <h3>Upload Multiple Feedback Records</h3>
+
+                <p class="hint">
+                    Upload a CSV file containing multiple student feedback
+                    records. Each feedback will be analyzed and saved.
+                </p>
+
+                <form action="/bulk" method="POST" enctype="multipart/form-data">
+
+                    <label for="file">Select CSV File</label>
+
+                    <input
+                        type="file"
+                        id="file"
+                        name="file"
+                        accept=".csv"
+                        required
+                    >
+
+                    <p class="hint">
+                        Make sure your CSV contains a column named
+                        <strong>feedback</strong>.
+                    </p>
+
+                    <button type="submit" class="secondary">
+                        Upload and Analyze CSV
+                    </button>
+
+                </form>
+
+                <p class="hint">
+                    You can use the provided
+                    <strong>campusvoice_upload_template.csv</strong>
+                    from the dataset folder as a starting point.
+                </p>
+            </div>
+
+        {% endif %}
+
+
+        {% if current_page == 'records' %}
+
+            <div class="panel">
+
+                <div class="record-heading">
+                    <div>
+                        <h3>All Feedback Records</h3>
+                        <p class="hint">
+                            Search and filter feedback stored in CampusVoice.
+                        </p>
+                    </div>
+
+                    <div class="record-count">
+                        {{ results|length }} Records Found
+                    </div>
+                </div>
+
+                <form action="/records" method="GET" class="filter-form">
+
+                    <div>
+                        <label for="department">Department</label>
+
+                        <select name="department" id="department">
+                            <option value="">All Departments</option>
+
+                            {% for department in departments %}
+                                <option value="{{ department }}"
+                                    {% if selected_department == department %}selected{% endif %}>
+                                    {{ department }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div>
+                        <label for="sentiment">Sentiment</label>
+
+                        <select name="sentiment" id="sentiment">
+                            <option value="">All Sentiments</option>
+                            {% for sentiment in sentiments %}
+                                <option value="{{ sentiment }}"
+                                    {% if selected_sentiment == sentiment %}selected{% endif %}>
+                                    {{ sentiment }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div>
+                        <label for="category">Category</label>
+
+                        <select name="category" id="category">
+                            <option value="">All Categories</option>
+
+                            {% for category in categories %}
+                                <option value="{{ category }}"
+                                    {% if selected_category == category %}selected{% endif %}>
+                                    {{ category }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <button type="submit">Apply Filters</button>
+
+                </form>
+
+                <a href="/records" class="download">Clear Filters</a>
+
+                {% if results %}
+                    <div class="table-wrap">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Feedback</th>
+                                    <th>Sentiment</th>
+                                    <th>Category</th>
+                                    <th>Department</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                {% for row in results|reverse %}
+                                    <tr>
+                                        <td>{{ row.get('timestamp', '') }}</td>
+
+                                        <td class="feedback-cell">
+                                            {{ row.get('feedback', '') }}
+                                        </td>
+
+                                        <td class="{{ row.get('sentiment', '')|lower }}">
+                                            {{ row.get('sentiment', '') }}
+                                        </td>
+
+                                        <td>{{ row.get('category', '') }}</td>
+
+                                        <td>{{ row.get('department', 'Not specified') }}</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="empty">
+                        No matching feedback records found.
+                    </div>
+                {% endif %}
+
+            </div>
+
+        {% endif %}
+
+
+        {% if current_page == 'analysis' %}
+
+            <div class="welcome">
+                <h2>Category and Issue Intelligence</h2>
+
+                <p>
+                    Understand the major areas discussed in student feedback
+                    and identify recurring institutional concerns.
+                </p>
+            </div>
+
+            <div class="panel">
+                <h3>Category Distribution</h3>
+
+                <div class="chart-box">
+                    <canvas id="analysisCategoryChart"></canvas>
+                </div>
+            </div>
+
+            <div class="panel">
+                <h3>Commonly Identified Issues</h3>
+
+                {% if common_issues %}
+                    <div class="issue-list">
+                        {% for issue, count in common_issues %}
+                            <div class="issue-item">
+                                <span>{{ issue }}</span>
+                                <span class="count">{{ count }}</span>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="empty">
+                        No recurring issues identified yet.
+                    </div>
+                {% endif %}
+            </div>
+
+        {% endif %}
+
+
+        <footer>
+            CampusVoice | NLP-Powered Student Feedback Intelligence
+        </footer>
+
+    </main>
+</div>
+
+
+<script>
+    const sentimentData = {{ sentiment_counts|default({})|tojson }};
+    const categoryData = {{ category_counts|default({})|tojson }};
+
+    function createChart(canvasId, labels, values, chartType) {
+        const canvas = document.getElementById(canvasId);
+
+        if (!canvas) {
+            return;
+        }
+
+        new Chart(canvas, {
+            type: chartType,
+            data: {
+                labels: labels,
+                datasets: [{
+                    data: values,
+                    backgroundColor: [
+                        '#2563eb',
+                        '#0f766e',
+                        '#f59e0b',
+                        '#dc2626',
+                        '#8b5cf6',
+                        '#0891b2',
+                        '#64748b'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    }
+                }
+            }
+        });
+    }
+
+    createChart(
+        'sentimentChart',
+        Object.keys(sentimentData),
+        Object.values(sentimentData),
+        'doughnut'
+    );
+
+    createChart(
+        'categoryChart',
+        Object.keys(categoryData),
+        Object.values(categoryData),
+        'bar'
+    );
+
+    createChart(
+        'analysisCategoryChart',
+        Object.keys(categoryData),
+        Object.values(categoryData),
+        'bar'
+    );
+</script>
+
+</body>
+</html>
